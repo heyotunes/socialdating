@@ -1,4 +1,4 @@
-import { Button, View, TextInput, Text } from "react-native";
+import { Button, View, TextInput, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import AppStyles from "../../styles/AppStyles";
 import { auth, db } from "../../config/firebase";
@@ -15,95 +15,31 @@ import {
   signInWithEmailAndPassword,
   deleteUser,
 } from "firebase/auth";
+import { SafeArea } from "../../utility/safe-area";
+//import { useFonts } from "expo-font";
+import { useNavigation } from "@react-navigation/native";
 
-export default function ManageAccount({ navigation }) {
-  let [newPassword, setNewPassword] = React.useState("");
-  let [currentPassword, setCurrentPassword] = React.useState("");
-  let [errorMessage, setErrorMessage] = React.useState("");
+export default function ManageAccount() {
+  const navigation = useNavigation();
+
   let logout = () => {
-    signOut(auth).then(() => {
-      navigation.navigate("Login");
-    });
-  };
-
-  let updateUserPassword = () => {
-    signInWithEmailAndPassword(auth, auth.currentUser.email, currentPassword)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        updatePassword(user, newPassword)
-          .then(() => {
-            setNewPassword("");
-            setErrorMessage("");
-            setCurrentPassword("");
-          })
-          .catch((error) => {
-            setErrorMessage(error.message);
-          });
+    signOut(auth)
+      .then(() => {
+        navigation.navigate("Login");
       })
       .catch((error) => {
-        setErrorMessage(error.message);
+        // Handle the error here
+        console.error("Logout error:", error);
       });
   };
 
-  let deleteUserAndToDos = () => {
-    if (currentPassword === "") {
-      setErrorMessage("Must enter current password to delete account");
-    } else {
-      signInWithEmailAndPassword(auth, auth.currentUser.email, currentPassword)
-        .then((userCredential) => {
-          const user = userCredential.user;
-
-          // Get all todos for user and delete
-          let batch = writeBatch(db);
-          const q = query(
-            collection(db, "Users"),
-            where("userId", "==", auth.currentUser.uid)
-          );
-          getDocs(q).then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              batch.delete(doc.ref);
-            });
-            batch.commit();
-
-            deleteUser(user)
-              .then(() => {
-                navigation.popToTop();
-              })
-              .catch((error) => {
-                setErrorMessage(error.message);
-              });
-          });
-        })
-        .catch((error) => {
-          setErrorMessage(error.message);
-        });
-    }
-  };
-
   return (
-    <View style={AppStyles.container}>
-      <Text style={AppStyles.errorText}>{errorMessage}</Text>
-      <TextInput
-        style={[AppStyles.textInput, AppStyles.darkTextInput]}
-        placeholder="Current Password"
-        value={currentPassword}
-        secureTextEntry={true}
-        onChangeText={setCurrentPassword}
-      />
-      <TextInput
-        style={[AppStyles.textInput, AppStyles.darkTextInput]}
-        placeholder="New Password"
-        value={newPassword}
-        secureTextEntry={true}
-        onChangeText={setNewPassword}
-      />
-      <Button title="Update Password" onPress={updateUserPassword} />
-      <Button
-        title="Edit Profile"
-        onPress={() => navigation.navigate("Profile")}
-      />
-      <Button title="Delete User" onPress={deleteUserAndToDos} />
-      <Button title="Logout" onPress={logout} />
-    </View>
+    <SafeArea>
+      <View>
+        <TouchableOpacity onPress={logout}>
+          <Text>Logout</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeArea>
   );
 }

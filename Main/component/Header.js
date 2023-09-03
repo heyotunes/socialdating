@@ -8,20 +8,15 @@ const Header = ({ title, callEnabled }) => {
 
   return (
     <View style={styles.view1}>
-      <View style={styles.view1}>
+      <View style={styles.view3}>
         <TouchableOpacity
           style={styles.touch1}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="chevron-back-outline" size={24} color="black" />
+          <Ionicons name="chevron-back-outline" size={35} color="black" />
         </TouchableOpacity>
         <Text style={styles.text1}>{title}</Text>
       </View>
-      {callEnabled && (
-        <TouchableOpacity style={styles.touch2}>
-          <Entypo name="phone" size={24} color="black" />
-        </TouchableOpacity>
-      )}
     </View>
   );
 };
@@ -31,7 +26,15 @@ const styles = StyleSheet.create({
     padding: 2,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    paddingBottom: 10,
+    borderBottomWidth: 0,
+
+    marginTop: 10,
+  },
+  view3: {
+    padding: 0,
+    flexDirection: "row",
+    alignItems: "center",
   },
   view2: {
     display: "flex",
@@ -40,11 +43,11 @@ const styles = StyleSheet.create({
   },
   text1: {
     paddingLeft: 2,
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "bold",
   },
   touch1: {
-    padding: 2,
+    padding: 0,
   },
   touch2: {
     borderRadius: "100%",

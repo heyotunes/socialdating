@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useLayoutEffect } from "react";
-import { SafeArea } from "../../utility/safe-area";
+//import { SafeArea } from "../../utility/safe-area";
 import { TouchableOpacity, View, Text, Image } from "react-native";
 
 import Swiper from "react-native-deck-swiper";
@@ -10,7 +10,9 @@ import {
   Entypo,
   AntDesign,
   MaterialCommunityIcons,
+  FontAwesome5,
   FontAwesome,
+  Octicons,
   MaterialIcons,
 } from "@expo/vector-icons";
 import { auth, db } from "../../config/firebase";
@@ -26,12 +28,22 @@ import {
   getDoc,
 } from "firebase/firestore";
 import generateId from "../../lib/generateid";
+import { useFonts } from "expo-font";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const [profiles, setProfiles] = useState([]);
   const [url, setUrl] = useState();
   const swipeRef = useRef(null);
+
+  const [fontsLoaded] = useFonts({
+    Openbold: require("../component/fonts/OpenSans-Bold.ttf"),
+    Openregular: require("../component/fonts/OpenSans-Regular.ttf"),
+    Openmedium: require("../component/fonts/OpenSans-Medium.ttf"),
+    Opensemibold: require("../component/fonts/OpenSans-SemiBold.ttf"),
+    Openextrabold: require("../component/fonts/OpenSans-ExtraBold.ttf"),
+    Rocksalt: require("../component/fonts/RockSalt-Regular.ttf"),
+  });
 
   useLayoutEffect(
     () =>
@@ -58,9 +70,17 @@ const HomeScreen = () => {
       const passedUserIds = passes.length > 0 ? passes : ["test"];
       const swipedUserIds = swipes.length > 0 ? swipes : ["test"];
 
+      const currentUser = await getDoc(
+        doc(collection(db, "Users"), auth.currentUser.uid)
+      );
+      //const seeker = currentUser.data().seeking;
+
+      //console.log(seeker);
+
       unsub = onSnapshot(
         query(
           collection(db, "Users"),
+          where("gender", "==", currentUser.data().seeking),
           where("id", "not-in", [...passedUserIds, ...swipedUserIds])
         ),
         (snapshot) => {
@@ -75,10 +95,16 @@ const HomeScreen = () => {
         }
       );
     };
-    console.log(auth.currentUser.job);
+
+    console.log(auth.currentUser.uid);
     fetchCards();
+
     return unsub;
   }, [db]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   const swipeLeft = (cardIndex) => {
     if (!profiles[cardIndex]) return;
@@ -105,7 +131,7 @@ const HomeScreen = () => {
       doc(db, "Users", userSwiped.id, "swipes", auth.currentUser.uid)
     ).then((DocumentSnapshot) => {
       if (DocumentSnapshot.exists()) {
-        console.log(`Hooray you matched with ${userSwiped.job}`);
+        console.log(`Hooray you matched with ${userSwiped.displayname}`);
 
         setDoc(
           doc(db, "Users", auth.currentUser.uid, "swipes", userSwiped.id),
@@ -184,66 +210,78 @@ const HomeScreen = () => {
                 <Image style={styles.photo} source={{ uri: card.photoURL }} />
 
                 <View style={styles.view3}>
-                  <View>
+                  <View style={{ flexDirection: "row" }}>
+                    <FontAwesome
+                      name="hashtag"
+                      size={22}
+                      color="#E8592B"
+                      style={{
+                        marginRight: 8,
+
+                        paddingTop: 6,
+                      }}
+                    />
                     <Text style={styles.font1}>{card.displayname}</Text>
-
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        marginTop: 20,
-                      }}
-                    >
-                      <MaterialIcons
-                        name="work"
-                        size={24}
-                        color="#8A2F2F"
-                        style={{ marginRight: 4 }}
-                      />
-                      <Text>{card.job}</Text>
-                    </View>
-
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        marginTop: 10,
-                      }}
-                    >
-                      <FontAwesome
-                        name="flag"
-                        size={24}
-                        color="#8A2F2F"
-                        style={{ marginRight: 4 }}
-                      />
-                      <Text>{card.country}</Text>
-                    </View>
-
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        marginTop: 10,
-                        textAlign: "right",
-                        width: 250,
-                        top: 1,
-                      }}
-                    >
-                      <Entypo
-                        name="open-book"
-                        size={24}
-                        color="#8A2F2F"
-                        style={{ marginRight: 4 }}
-                      />
-                      <Text>{card.story}</Text>
-                    </View>
                   </View>
 
                   <View style={{ flexDirection: "row" }}>
-                    <FontAwesome
-                      name="birthday-cake"
-                      size={24}
-                      color="#8A2F2F"
-                      style={{ marginTop: 5, marginRight: 4 }}
+                    <MaterialIcons
+                      name="cake"
+                      size={22}
+                      color="#E8592B"
+                      style={{
+                        marginRight: 8,
+
+                        paddingTop: 4,
+                      }}
                     />
                     <Text style={styles.font2}>{card.age}</Text>
+                  </View>
+
+                  <View style={{ flexDirection: "row" }}>
+                    <Entypo
+                      name="location-pin"
+                      size={22}
+                      color="#E8592B"
+                      style={{
+                        marginRight: 8,
+
+                        paddingTop: 5,
+                      }}
+                    />
+                    <Text style={styles.font2}>{card.states}</Text>
+                  </View>
+
+                  <View style={{ flexDirection: "row" }}>
+                    <MaterialCommunityIcons
+                      name="human-male-height"
+                      size={22}
+                      color="#E8592B"
+                      style={{
+                        marginRight: 8,
+
+                        paddingTop: 5,
+                      }}
+                    />
+                    <Text style={styles.font2}>{card.height}</Text>
+                  </View>
+
+                  <View style={{ flexDirection: "row" }}>
+                    <FontAwesome5
+                      name="genderless"
+                      size={22}
+                      color="#E8592B"
+                      style={{
+                        marginRight: 8,
+
+                        paddingTop: 5,
+                      }}
+                    />
+                    <Text style={styles.font2}>{card.gender}</Text>
+                  </View>
+
+                  <View style={{ marginTop: 5, marginLeft: 8, width: 340 }}>
+                    <Text style={styles.font3}>{card.story}</Text>
                   </View>
                 </View>
               </View>
@@ -267,13 +305,13 @@ const HomeScreen = () => {
           onPress={() => swipeRef.current.swipeLeft()}
           style={styles.touch1}
         >
-          <Entypo name="cross" size={40} color="white" />
+          <Entypo name="cross" size={60} color="#C22929" />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => swipeRef.current.swipeRight()}
           style={styles.touch}
         >
-          <AntDesign name="heart" size={30} color="white" />
+          <AntDesign name="heart" size={40} color="white" />
         </TouchableOpacity>
       </View>
     </SafeArea>
@@ -289,6 +327,7 @@ const styles = StyleSheet.create({
   view1: {
     flex: 1,
     margin: 6,
+    marginTop: -20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -307,24 +346,24 @@ const styles = StyleSheet.create({
   },
   view3: {
     backgroundColor: "white",
-    height: "20%",
+    height: "40%",
     width: "100%",
     position: "absolute",
     bottom: 0,
-    justifyContent: "space-between",
-    flexDirection: "row",
-    alignItems: "space-between",
+
+    justifyContent: "flex-start",
+
+    alignItems: "flex-start",
     paddingLeft: 20,
-    paddingRight: 20,
   },
   view4: {
     display: "flex",
     justifyContent: "space-evenly",
     flexDirection: "row",
-    marginBottom: 10,
+    marginBottom: 25,
   },
   photo: {
-    height: "70%",
+    height: "60%",
     width: "100%",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
@@ -332,13 +371,31 @@ const styles = StyleSheet.create({
     top: 0,
   },
   font1: {
-    fontSize: 30,
-    fontWeight: "bold",
+    fontSize: 20,
+    paddingTop: 5,
+    fontFamily: "Openbold",
   },
   font2: {
-    fontSize: 30,
-    fontWeight: "bold",
-    marginBottom: 15,
+    fontSize: 18,
+    paddingTop: 2,
+    fontFamily: "Openmedium",
+    marginBottom: 1,
+    color: "#423F3F",
+  },
+  font3: {
+    fontSize: 18,
+    paddingTop: 2,
+    fontFamily: "Openregular",
+    marginBottom: 1,
+    color: "#423F3F",
+  },
+  font4: {
+    fontSize: 20,
+    paddingTop: 5,
+    fontFamily: "Openbold",
+    marginBottom: 5,
+    width: 320,
+    color: "black",
   },
   touch: {
     alignItems: "center",
@@ -346,7 +403,7 @@ const styles = StyleSheet.create({
     borderRadius: "50",
     width: 70,
     height: 70,
-    backgroundColor: "#8A2F2F",
+    backgroundColor: "#2C70C0",
   },
   touch1: {
     alignItems: "center",
@@ -354,7 +411,7 @@ const styles = StyleSheet.create({
     borderRadius: "50",
     width: 70,
     height: 70,
-    backgroundColor: "#939393",
+    backgroundColor: "#8BB6E8",
   },
   view5: {
     position: "relative",

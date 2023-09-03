@@ -9,50 +9,28 @@ import { Ionicons } from "@expo/vector-icons";
 //import ManageAccount from "../Main/screens/ManageAccountScreen";
 import MatchScreen from "../Main/screens/MatchScreen";
 import ManageAccount from "../Main/screens/ManageAccountScreen";
+import AcctProfileScreen from "../Main/screens/AcctProfileScreen";
+import LoginScreen from "../Main/screens/LoginScreen";
+import Firstscreen from "../Main/screens/Firstscreen";
+import RegisterScreen from "../Main/screens/RegisterScreen";
+import MessageScreen from "../Main/screens/MessageScreen";
+import ProfileScreen from "../Main/screens/ProfileScreen";
+import ResetPassword from "../Main/screens/ResetPasswordScreen";
+import DeleteuserScreen from "../Main/screens/DeleteuserScreen";
+import UpdatepasswordScreen from "../Main/screens/UpdatepasswordScreen";
+import RejectScreen from "../Main/screens/RejectScreen";
+//import AddressScreen from "../Main/screens/AddressScreen";
 
-//const Stack = createNativeStackNavigator();
-
-const HomeStack = createNativeStackNavigator();
-
-const HomeStackScreen = () => {
-  return (
-    <HomeStack.Navigator>
-      <HomeStack.Screen
-        options={{ headerShown: false }}
-        name="Home"
-        component={HomeScreen}
-      />
-      <HomeStack.Screen
-        options={{ headerShown: false }}
-        name="Match"
-        component={MatchScreen}
-        screenOptions={{ presentation: "transparentModal" }}
-      />
-    </HomeStack.Navigator>
-  );
-};
-const ChatStack = createNativeStackNavigator();
-
-const ChatStackScreen = () => {
-  return (
-    <ChatStack.Navigator>
-      <ChatStack.Screen
-        options={{ headerShown: false }}
-        name="Chat"
-        component={ChatScreen}
-      />
-    </ChatStack.Navigator>
-  );
-};
-
+const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TAB_ICON = {
-  Home1: "home-sharp",
-  Chat1: "chatbubble",
-  Like: "heart",
-  Profile: "person",
-  settings: "settings",
+  Home: "home-outline",
+  Chat: "chatbox-ellipses-outline",
+  Like: "heart-outline",
+  Reject: "ios-heart-dislike-outline",
+  Profiles: "person-outline",
+  Settings: "settings",
 };
 
 const createScreenOptions = ({ route }) => {
@@ -61,40 +39,56 @@ const createScreenOptions = ({ route }) => {
     tabBarIcon: ({ size, color }) => (
       <Ionicons name={iconName} size={size} color={color} />
     ),
+    tabBarStyle: {
+      backgroundColor: "white",
+      height: 80,
+      fontSize: 60,
+      paddingTop: 10,
+    },
   };
 };
 
-const TabNavigator = () => {
+const TabNav = () => {
   return (
     <Tab.Navigator
       screenOptions={createScreenOptions}
       tabBarOptions={{
-        activeTintColor: "#8A2F2F",
-        inactiveTintColor: "gray",
+        activeTintColor: "#2C70C0",
+        inactiveTintColor: "#423F3F",
       }}
     >
       <Tab.Group>
         <Tab.Screen
-          options={{ headerShown: false }}
-          name="Home1"
-          component={HomeStackScreen}
+          options={{ headerShown: false, title: "" }}
+          name="Home"
+          component={HomeScreen}
         />
         <Tab.Screen
-          options={{ headerShown: false }}
-          name="Chat1"
-          component={ChatStackScreen}
+          options={{ headerShown: false, title: "" }}
+          name="Chat"
+          component={ChatScreen}
         />
 
         <Tab.Screen
-          options={{ headerShown: false }}
+          options={{ headerShown: false, title: "" }}
           name="Like"
           component={LikeScreen}
           //initialParams={{ itemId: userSwiped }}
         />
-
         <Tab.Screen
-          options={{ headerShown: false }}
-          name="settings"
+          options={{ headerShown: false, title: "" }}
+          name="Reject"
+          component={RejectScreen}
+          //initialParams={{ itemId: userSwiped }}
+        />
+        <Tab.Screen
+          options={{ headerShown: false, title: "" }}
+          name="Profiles"
+          component={AcctProfileScreen}
+        />
+        <Tab.Screen
+          options={{ headerShown: false, title: "" }}
+          name="Settings"
           component={ManageAccount}
         />
       </Tab.Group>
@@ -102,4 +96,66 @@ const TabNavigator = () => {
   );
 };
 
-export default TabNavigator;
+const Stacknav = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        options={{ headerShown: false }}
+        name="First"
+        component={Firstscreen}
+      />
+      <Stack.Screen
+        options={{ headerShown: false }}
+        name="Login"
+        component={LoginScreen}
+      />
+
+      <Stack.Screen
+        name="Register"
+        component={RegisterScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        options={{ headerShown: false }}
+        name="Message"
+        component={MessageScreen}
+      />
+      <Stack.Screen
+        options={{ headerShown: false }}
+        name="Profile"
+        component={ProfileScreen}
+      />
+
+      <Stack.Screen
+        options={{ headerShown: false }}
+        name="Match"
+        component={MatchScreen}
+        screenOptions={{ presentation: "transparentModal" }}
+      />
+
+      <Stack.Screen
+        name="Stack"
+        component={TabNav}
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="ResetPassword"
+        component={ResetPassword}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Deleteuser"
+        component={DeleteuserScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Updatepassword"
+        component={UpdatepasswordScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+export default Stacknav;

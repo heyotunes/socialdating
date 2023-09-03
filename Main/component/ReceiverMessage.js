@@ -21,17 +21,17 @@ const ReceiverMessage = ({ message }) => {
 
 const styles = StyleSheet.create({
   viewsend1: {
-    backgroundColor: "red",
-    borderRadius: "100%",
-    borderTopLeftRadius: 80,
-    paddingLeft: 55,
-    paddingRight: 55,
-    paddingTop: 20,
-    paddingBottom: 20,
+    backgroundColor: "#C4C4C4",
+    borderRadius: "20%",
+    borderTopLeftRadius: 0,
+    paddingLeft: 25,
+    paddingRight: 25,
+    paddingTop: 10,
+    paddingBottom: 10,
     marginLeft: 63,
     marginRight: 93,
     marginTop: 2,
-    marginBottom: 2,
+    marginBottom: 12,
     alignSelf: "flex-start",
   },
 
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     left: -55,
   },
   text1: {
-    color: "white",
+    color: "black",
     fontSize: 18,
     textAlign: "center",
   },

@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useLayoutEffect } from "react";
-//import { SafeArea } from "../../utility/safe-area";
+import { SafeArea } from "../../utility/safe-area";
 import { TouchableOpacity, View, Text, Image } from "react-native";
 
 import Swiper from "react-native-deck-swiper";
@@ -33,7 +33,7 @@ import { async } from "@firebase/util";
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
 
-const LikeScreen = () => {
+const RejectScreen = () => {
   const navigation = useNavigation();
   const [profiles, setProfiles] = useState([]);
   const [url, setUrl] = useState();
@@ -85,25 +85,25 @@ const LikeScreen = () => {
         )
       );
 
-      const usersWithSwipes = [];
+      const usersWithPasses = [];
 
       querySnapshot.forEach(async (doc) => {
-        const swipesSnapshot = await getDocs(collection(doc.ref, "swipes"));
+        const swipesSnapshot = await getDocs(collection(doc.ref, "passes"));
         swipesSnapshot.forEach((swipeDoc) => {
           if (swipeDoc.id === auth.currentUser.uid) {
             const user = {
               id: doc.id,
               ...doc.data(),
             };
-            usersWithSwipes.push(user);
+            usersWithPasses.push(user);
 
-            setProfiles(usersWithSwipes);
-            console.log(usersWithSwipes);
+            setProfiles(usersWithPasses);
+            console.log(usersWithPasses);
           }
         });
       });
 
-      return usersWithSwipes;
+      return usersWithPasses;
     };
 
     console.log(auth.currentUser.uid);
@@ -116,66 +116,6 @@ const LikeScreen = () => {
     return null;
   }
 
-  const swipeLeft = (cardIndex) => {
-    if (!profiles[cardIndex]) return;
-
-    const userSwiped = profiles[cardIndex];
-    console.log(`you swiped PASS on ${userSwiped.job}`);
-
-    setDoc(
-      doc(db, "Users", auth.currentUser.uid, "passes", userSwiped.id),
-      userSwiped
-    );
-  };
-
-  const swipeRight = async (cardIndex) => {
-    if (!profiles[cardIndex]) return;
-
-    const userSwiped = profiles[cardIndex];
-
-    const loggedInProfile = await (
-      await getDoc(doc(db, "Users", auth.currentUser.uid))
-    ).data();
-
-    getDoc(
-      doc(db, "Users", userSwiped.id, "swipes", auth.currentUser.uid)
-    ).then((DocumentSnapshot) => {
-      if (DocumentSnapshot.exists()) {
-        console.log(`Hooray you matched with ${userSwiped.displayname}`);
-
-        setDoc(
-          doc(db, "Users", auth.currentUser.uid, "swipes", userSwiped.id),
-          userSwiped
-        );
-
-        //create a match
-        setDoc(
-          doc(db, "matches", generateId(auth.currentUser.uid, userSwiped.id)),
-          {
-            users: {
-              [auth.currentUser.uid]: loggedInProfile,
-              [userSwiped.id]: userSwiped,
-            },
-            usersMatched: [auth.currentUser.uid, userSwiped.id],
-            timestamp: serverTimestamp(),
-          }
-        );
-
-        navigation.navigate("Match", {
-          loggedInProfile,
-          userSwiped,
-        });
-      } else {
-        console.log(`you swipe on ${userSwiped.job}`);
-
-        setDoc(
-          doc(db, "Users", auth.currentUser.uid, "swipes", userSwiped.id),
-          userSwiped
-        );
-      }
-    });
-  };
-
   return (
     <SafeArea style={styles.safe}>
       <View style={styles.view1}>
@@ -187,33 +127,6 @@ const LikeScreen = () => {
           cardIndex={0}
           animateCardOpacity
           verticalSwipe={false}
-          onSwipedLeft={(cardIndex) => {
-            console.log("SWIPE PASS");
-            swipeLeft(cardIndex);
-          }}
-          onSwipedRight={(cardIndex) => {
-            console.log("SWIPE MATCH");
-            swipeRight(cardIndex);
-          }}
-          overlayLabels={{
-            left: {
-              title: "NOPE",
-              style: {
-                label: {
-                  textAlign: "right",
-                  color: "red",
-                },
-              },
-            },
-            right: {
-              title: "MATCH",
-              style: {
-                label: {
-                  color: "green",
-                },
-              },
-            },
-          }}
           renderCard={(card) =>
             card ? (
               <View key={card.id} style={styles.view2}>
@@ -300,21 +213,22 @@ const LikeScreen = () => {
                 <Text
                   style={{
                     fontFamily: "Opensemibold",
-                    fontSize: 22,
+                    fontSize: 32,
                     color: "black",
+                    textAlign: "center",
                   }}
                 >
-                  Sorry no likes yet!
+                  Zero rejections,keep swiping!
                 </Text>
                 <View
                   style={{
                     marginTop: 20,
                   }}
                 >
-                  <FontAwesome5
-                    name="hand-holding-heart"
-                    size={94}
-                    color="#5E9DE8"
+                  <MaterialCommunityIcons
+                    name="heart-broken"
+                    size={92}
+                    color="red"
                   />
                 </View>
               </View>
@@ -322,25 +236,11 @@ const LikeScreen = () => {
           }
         />
       </View>
-      <View style={styles.view4}>
-        <TouchableOpacity
-          onPress={() => swipeRef.current.swipeLeft()}
-          style={styles.touch1}
-        >
-          <Entypo name="cross" size={60} color="#C22929" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => swipeRef.current.swipeRight()}
-          style={styles.touch}
-        >
-          <AntDesign name="heart" size={40} color="white" />
-        </TouchableOpacity>
-      </View>
     </SafeArea>
   );
 };
 
-export default LikeScreen;
+export default RejectScreen;
 
 const styles = StyleSheet.create({
   safe: {
@@ -392,6 +292,11 @@ const styles = StyleSheet.create({
     top: 0,
   },
   font1: {
+    fontSize: 30,
+    paddingTop: 10,
+    fontFamily: "Openbold",
+  },
+  font1: {
     fontSize: 20,
     paddingTop: 5,
     fontFamily: "Openbold",
@@ -424,7 +329,7 @@ const styles = StyleSheet.create({
     borderRadius: "50",
     width: 70,
     height: 70,
-    backgroundColor: "#2C70C0",
+    backgroundColor: "#46B1B2",
   },
   touch1: {
     alignItems: "center",
@@ -432,7 +337,7 @@ const styles = StyleSheet.create({
     borderRadius: "50",
     width: 70,
     height: 70,
-    backgroundColor: "#8BB6E8",
+    backgroundColor: "#CFFEFF",
   },
   view5: {
     position: "relative",

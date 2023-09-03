@@ -12,12 +12,21 @@ import {
 import AppStyles from "../../styles/AppStyles";
 import InlineTextButton from "../../components/inlineTextButton";
 import React from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import { auth } from "../../config/firebase";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { signInWithGoogle } from "../../config/firebase";
+import { useFonts } from "expo-font";
 
 const LoginScreen = ({ navigation }) => {
-  const background = require("../../assets/Afro.png");
+  const [fontsLoaded] = useFonts({
+    Openbold: require("../component/fonts/OpenSans-Bold.ttf"),
+    Openregular: require("../component/fonts/OpenSans-Regular.ttf"),
+    Openmedium: require("../component/fonts/OpenSans-Medium.ttf"),
+    Opensemibold: require("../component/fonts/OpenSans-SemiBold.ttf"),
+    Openextrabold: require("../component/fonts/OpenSans-ExtraBold.ttf"),
+    Rock: require("../component/fonts/RockSalt-Regular.ttf"),
+  });
 
   if (auth.currentUser) {
     navigation.navigate("Stack");
@@ -50,9 +59,33 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <ImageBackground style={AppStyles.imageContainer} source={background}>
-      <Text style={[AppStyles.lightText, AppStyles.header]}>Login</Text>
+    <LinearGradient colors={["#3ED7E1", "#2C70C0"]} style={{ flex: 1 }}>
+      <View style={{ marginTop: 120, alignSelf: "center" }}>
+        <Text
+          style={{
+            fontSize: 25,
+            fontFamily: "Rock",
+            color: "white",
+            fontWeight: "bold",
+            letterSpacing: 10,
+            shadowColor: "rgba(70, 70, 70, 0.9)",
+            shadowOpacity: 0.8,
+            elevation: 6,
+            shadowRadius: 15,
+            shadowOffset: { width: 1, height: 13 },
+          }}
+        >
+          SWIPES
+        </Text>
+      </View>
+      <Text style={[AppStyles.lightText, AppStyles.header]}>
+        Sign In Your Account
+      </Text>
       <Text style={AppStyles.errorText}>{errorMessage}</Text>
       <TextInput
         style={[
@@ -94,9 +127,34 @@ const LoginScreen = ({ navigation }) => {
         />
       </View>
       <TouchableOpacity onPress={login} style={styles.touch1}>
-        <Text style={styles.btn1}> Login</Text>
+        <LinearGradient
+          colors={["#CA4E32", "#BD7B2E"]}
+          style={{
+            width: 360,
+            height: 60,
+            alignSelf: "center",
+            justifyContent: "center",
+            borderRadius: 20,
+            shadowColor: "rgba(14, 84, 80, 0.3)",
+            shadowOpacity: 0.8,
+            elevation: 6,
+            shadowRadius: 15,
+            shadowOffset: { width: 1, height: 13 },
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              color: "white",
+              fontSize: 22,
+              fontFamily: "Openbold",
+            }}
+          >
+            Login
+          </Text>
+        </LinearGradient>
       </TouchableOpacity>
-    </ImageBackground>
+    </LinearGradient>
   );
 };
 
@@ -112,6 +170,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 350,
     height: 60,
+    alignSelf: "center",
   },
   input1: {
     color: "black",
